@@ -3,6 +3,9 @@
 
     <string name="app_name">Filmgur</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="rememberme">Remember Me!</string>
+    <string name="username">Username:</string>
+    <string name="login">Login!</string>
+    <string name="password">Password:</string>
 
 </resources>
