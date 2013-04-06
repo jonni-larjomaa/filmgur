@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class GetAuthToken extends AsyncTask<Void, Void, Void> {
+public class GetAuthToken extends AsyncTask<Void, Void, String> {
 	
 	static final String TAG = "filmgur";
 	
@@ -29,29 +29,38 @@ public class GetAuthToken extends AsyncTask<Void, Void, Void> {
 	}
 
 	@Override
-	protected Void doInBackground(Void... tokens) {
+	protected String doInBackground(Void... v) {
 		
-		String token ="none";
+		String token = null;
+		
 		try {
-		   token = GoogleAuthUtil.getToken(act, email, scope);
-		   Log.i(TAG,"got token: "+token);
-		 } catch (GooglePlayServicesAvailabilityException playEx) {
+		    token = GoogleAuthUtil.getToken(act, email, scope);
+		} catch (GooglePlayServicesAvailabilityException playEx) {
 			 
 			 Log.e(TAG,"got exception: "+ playEx.getConnectionStatusCode());
 			 act.showErrorDialog(playEx.getConnectionStatusCode());	     
 		 } catch (UserRecoverableAuthException recoverableException) {
 			 
-			 Log.i(TAG, "Got recoverable error!");
 		     Intent recoveryIntent = recoverableException.getIntent();
 		     act.startActivityForResult(recoveryIntent, 100);
-		     // Use the intent in a custom dialog or just startActivityForResult.
 		 } catch (GoogleAuthException authEx) {
-		     // This is likely unrecoverable.
 		     Log.e(TAG, "Unrecoverable authentication exception: " + authEx.getMessage(), authEx);
 		 } catch (IOException ioEx) {
 		     Log.i(TAG, "transient error encountered: " + ioEx.getMessage());
 		 }
-		return null;
+		return token;
 	}
 
+	@Override
+	protected void onPostExecute(String result) {
+		
+		if(result != null){
+			Log.i(TAG,"Got authentication token: "+result);
+			Intent albums = new Intent(act, AlbumsActivity.class);
+			albums.putExtra("TOKEN", result);
+		    act.startActivity(albums);
+		}
+	}
+
+	
 }

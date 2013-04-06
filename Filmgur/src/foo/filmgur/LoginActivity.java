@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -19,7 +18,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 public class LoginActivity extends SherlockActivity {
 
 	static final String TAG = "filmgur";
-	static final String SCOPE = "oauth2:https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive";
+	static final String SCOPE = "oauth2:https://www.googleapis.com/auth/drive";
 	
 	static final int REQUEST_CODE_RECOVER_FROM_AUTH_ERROR = 1001;
     static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
@@ -62,8 +61,6 @@ public class LoginActivity extends SherlockActivity {
 		
 		GetAuthToken gat = new GetAuthToken(mEmail, SCOPE, this);
 		gat.execute();
-		
-		Log.i(TAG,"logged in: "+mEmail+"with token: ");
  	}
 
 	/**
