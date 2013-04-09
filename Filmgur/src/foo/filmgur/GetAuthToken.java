@@ -7,8 +7,10 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 
 public class GetAuthToken extends AsyncTask<Void, Void, String> {
@@ -17,10 +19,10 @@ public class GetAuthToken extends AsyncTask<Void, Void, String> {
 	
 	protected String email;
 	protected String scope;
-	protected LoginActivity act;
+	protected Activity act;
 	
 	
-	public GetAuthToken(String email, String scope, LoginActivity act  ) {
+	public GetAuthToken(String email, String scope, Activity act  ) {
 		super();
 		
 		this.act = act;
@@ -38,7 +40,7 @@ public class GetAuthToken extends AsyncTask<Void, Void, String> {
 		} catch (GooglePlayServicesAvailabilityException playEx) {
 			 
 			 Log.e(TAG,"got exception: "+ playEx.getConnectionStatusCode());
-			 act.showErrorDialog(playEx.getConnectionStatusCode());	     
+			 ((FilmgurActivity)act).showErrorDialog(playEx.getConnectionStatusCode());	     
 		 } catch (UserRecoverableAuthException recoverableException) {
 			 
 		     Intent recoveryIntent = recoverableException.getIntent();
@@ -56,9 +58,9 @@ public class GetAuthToken extends AsyncTask<Void, Void, String> {
 		
 		if(result != null){
 			Log.i(TAG,"Got authentication token: "+result);
-			Intent albums = new Intent(act, AlbumsActivity.class);
-			albums.putExtra("TOKEN", result);
-		    act.startActivity(albums);
+			Bundle b = new Bundle();
+			b.putString("TOKEN", result);
+			((FilmgurActivity)act).onFragmentChanged(R.layout.albums, b);
 		}
 	}
 
