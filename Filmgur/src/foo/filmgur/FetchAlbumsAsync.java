@@ -1,40 +1,101 @@
 package foo.filmgur;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import foo.filmgur.models.GDAlbums;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.content.Context;
+import foo.filmgur.models.GDAlbum;
+import android.net.Uri;
+import android.net.Uri.Builder;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 
-public class FetchAlbumsAsync extends AsyncTask<GDAlbums, Void, List<String>> {
-
+public class FetchAlbumsAsync extends AsyncTask<Void, Void, List<GDAlbum>> {
+	
 	private static final String TAG = "filmgur";
 	
-	private Context ctx;
-	private GridView gv;
-	private String method;
+	private ArrayAdapter<GDAlbum> ad;
+	private String token;
 	
-	public FetchAlbumsAsync(Context ctx, GridView gv,String method){
+	public FetchAlbumsAsync(ArrayAdapter<GDAlbum> ad, String token){
 		super();
-		this.ctx = ctx;
-		this.gv = gv;
-		this.method = method;
+		this.ad = ad;
+		this.token = token;
 	}
 	
 	@Override
-	protected List<String> doInBackground(GDAlbums... albums) {
-		return albums[0].fetchAlbums();
+	protected List<GDAlbum> doInBackground(Void... a) {
+		return fetchAlbums();
 	}
 
 	@Override
-	protected void onPostExecute(List<String> result) {
-		 if(result != null){
-			 ArrayAdapter<String> adapter = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, result);
-			 gv.setAdapter(adapter);
+	protected void onPostExecute(final List<GDAlbum> result) {
+		 if(!result.isEmpty()){
+			 if(!ad.isEmpty()){
+				 ad.clear();
+			 }
+			 ad.addAll(result);
+			 ad.notifyDataSetChanged();
 		 }
+	}
+	
+	public List<GDAlbum> fetchAlbums(){
+		
+		// build query uri.
+		Builder ub = Uri.parse("https://www.googleapis.com").buildUpon();
+		ub.path("/drive/v2/files");
+		ub.appendQueryParameter("q", "mimeType='application/vnd.google-apps.folder'");
+		ub.appendQueryParameter("fields", "items(title,id)");
+		
+		// make httpget mehtod. and add auhtorization header..
+		HttpGet get = new HttpGet(ub.build().toString());
+		get.addHeader("Authorization", "Bearer "+token);
+		
+		Log.d(TAG,"Request: "+get.getRequestLine());
+		
+		// create client to execute the request
+		HttpClient client = new DefaultHttpClient();
+		
+		try {
+			return parseJSON(client.execute(get, new BasicResponseHandler()));
+		} catch (ClientProtocolException e) {
+			Log.e(TAG,"Bad Request: "+e.getMessage());
+		} catch (IOException e) {
+			Log.e(TAG,"could read from network");
+		}
+		return null;
+	}
+	
+	protected List<GDAlbum> parseJSON(String json){
+		
+		List<GDAlbum> tmplist = new ArrayList<GDAlbum>();
+		
+		try {
+			JSONObject job = new JSONObject(json);
+			JSONArray items = job.getJSONArray("items");
+			
+			for(int i=0;i < items.length();i++){
+				JSONObject albumsob = items.getJSONObject(i);
+				GDAlbum album = new GDAlbum();
+				album.setId(albumsob.getString("id"));
+				album.setTitle(albumsob.getString("title"));
+				tmplist.add(album);
+			}
+			return tmplist;
+		} catch (JSONException e) {
+			Log.i(TAG,"Something bad happened with json: "+e.getMessage());
+		}
+		return tmplist;
 	}
 }
