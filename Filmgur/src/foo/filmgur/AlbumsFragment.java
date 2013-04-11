@@ -1,7 +1,7 @@
 package foo.filmgur;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -17,19 +17,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.Toast;
 
-public class AlbumsFragment extends SherlockFragment{
+public class AlbumsFragment extends SherlockListFragment{
 	
 	static final String TAG = "filmgur";
 	
 	protected String token;
-	private GridView albumsgv;
 	protected ArrayAdapter<GDAlbum> albumsad;
 	
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setHasOptionsMenu(true);
+		setRetainInstance(true);
 		
 		Bundle b = getArguments();
 		token = b.getString("TOKEN");
@@ -37,8 +40,7 @@ public class AlbumsFragment extends SherlockFragment{
 		final ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setSubtitle("Albums");
-		setHasOptionsMenu(true);
-
+		
 		albumsad = new ArrayAdapter<GDAlbum>(getActivity(), android.R.layout.simple_list_item_1);
 		
 		showAlbums();
@@ -49,9 +51,7 @@ public class AlbumsFragment extends SherlockFragment{
 			Bundle savedInstanceState) {
 		
 		View view = inflater.inflate(R.layout.albums, container,false);
-		
-		albumsgv = (GridView) view.findViewById(R.id.gridView1);
-		albumsgv.setAdapter(albumsad);
+		setListAdapter(albumsad);
 		
 		return view;
 	}
@@ -81,16 +81,12 @@ public class AlbumsFragment extends SherlockFragment{
 
 			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
-			  String value = input.getText().toString();
-			  Log.i(TAG,"Albumname is: "+value);
-			  createAlbum(value);
-			  }
-			});
-
-			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			  public void onClick(DialogInterface dialog, int whichButton) {
-			    // Canceled.
-			  }
+				
+				  String value = input.getText().toString();
+				  Log.i(TAG,"Albumname is: "+value);
+				  createAlbum(value);
+			  
+				}
 			});
 			alert.show();
 			
@@ -98,6 +94,14 @@ public class AlbumsFragment extends SherlockFragment{
 		return super.onOptionsItemSelected(item);
 	}
 	
+	
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		Toast.makeText(getActivity(), albumsad.getItem(position).getId(), Toast.LENGTH_SHORT).show();
+		super.onListItemClick(l, v, position, id);
+	}
+
 	private void showAlbums() {
 		FetchAlbumsAsync fas = new FetchAlbumsAsync(albumsad,token);
 		fas.execute();

@@ -51,7 +51,7 @@ public class CreateAlbumAsync extends AsyncTask<Void, Void, GDAlbum> {
 		// build query uri.
 		Builder ub = Uri.parse("https://www.googleapis.com").buildUpon();
 		ub.path("/drive/v2/files");
-		ub.appendQueryParameter("fields", "items(title,id)");
+		ub.appendQueryParameter("fields", "title,id");
 		
 		Log.d(TAG,"URL to request: "+ub.build().toString());
 		
