@@ -6,8 +6,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import foo.filmgur.listener.OnFragmentChangedListener;
 import foo.filmgur.models.GDAlbum;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -27,6 +29,18 @@ public class AlbumsFragment extends SherlockListFragment{
 	protected String token;
 	protected ArrayAdapter<GDAlbum> albumsad;
 	
+	private OnFragmentChangedListener mListener = null;
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		
+		try{
+			mListener = (OnFragmentChangedListener) activity;			
+		}catch(Exception e){
+			Log.e(TAG, "error", e);
+		}
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,8 +112,12 @@ public class AlbumsFragment extends SherlockListFragment{
 	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		Toast.makeText(getActivity(), albumsad.getItem(position).getId(), Toast.LENGTH_SHORT).show();
 		super.onListItemClick(l, v, position, id);
+		
+		Bundle alb = new Bundle();
+		alb.putParcelable("album", albumsad.getItem(position));
+
+		mListener.onFragmentChanged(R.layout.images, alb);
 	}
 
 	private void showAlbums() {
