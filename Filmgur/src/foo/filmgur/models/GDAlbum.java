@@ -1,8 +1,9 @@
 package foo.filmgur.models;
 
-public class GDAlbum {
-	
-	final static String MIME = "application/vnd.google-apps.folder";
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class GDAlbum implements Parcelable{
 	
 	private String title;
 	private String id;
@@ -25,5 +26,32 @@ public class GDAlbum {
 	
 	public String toString(){
 		return title;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(title);
+		dest.writeString(id);
+		
+	}
+	
+	public static final Parcelable.Creator<GDAlbum> CREATOR = new Parcelable.Creator<GDAlbum>() {
+		public GDAlbum createFromParcel(Parcel in) {
+			return new GDAlbum(in);
+		}
+
+		public GDAlbum[] newArray(int size) {
+			return new GDAlbum[size];
+		}
+	};
+	
+	private GDAlbum(Parcel in){
+		title = in.readString();
+		id = in.readString();
 	}
 }
