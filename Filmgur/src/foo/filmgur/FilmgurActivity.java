@@ -13,11 +13,20 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import foo.filmgur.listener.OnFragmentChangedListener;
 
+
+/**
+ * Application main Activity handles all the fragments and fragment transitions.
+ * @author Jonni
+ *
+ */
 public class FilmgurActivity extends SherlockFragmentActivity implements OnFragmentChangedListener, OnBackStackChangedListener {
 
 	
 	private ActionBar mActionBar = null;
 	
+	/**
+	 * Start filmgur and attach login fragment and set actionbar in use.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,6 +43,9 @@ public class FilmgurActivity extends SherlockFragmentActivity implements OnFragm
 		transaction.commit();
 	}
 
+	/**
+	 * Listener to handle all the fragment transitions.
+	 */
 	@Override
 	public void onFragmentChanged(int layoutResId, Bundle bundle) {
 		Fragment fragment = null;
@@ -47,26 +59,38 @@ public class FilmgurActivity extends SherlockFragmentActivity implements OnFragm
 			transaction.addToBackStack("albums");
 			transaction.commit();
 		}
+		if(R.layout.images == layoutResId){
+			fragment = new ImagesFragment();
+			if(bundle != null){
+				fragment.setArguments(bundle);
+			}
+			transaction.replace(R.id.container, fragment, "Images");
+			transaction.addToBackStack("images");
+			transaction.commit();
+		}
 
 	}
 
+	/**
+	 * Handling of "up" navigation. not popping the first (login) fragment.
+	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		final int itemId = item.getItemId();
 		if(itemId == android.R.id.home){
 			// clean up back stack
 			int num = getSupportFragmentManager().getBackStackEntryCount();
-			if(num > 0){
-				// do not clean up the root fragment
-				for(int i = 0; i < (num - 1); i++){
-					getSupportFragmentManager().popBackStack();		
-				}	
+			if(num > 1){
+				getSupportFragmentManager().popBackStack();
 			}			
 			return true;
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
 	
+	/**
+	 * Actions to be taken when changes in backstack happen.
+	 */
 	@Override
 	public void onBackStackChanged() {
 		// the root fragment is the first one
