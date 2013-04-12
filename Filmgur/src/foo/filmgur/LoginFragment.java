@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.auth.GoogleAuthUtil;
 
@@ -52,6 +53,14 @@ public class LoginFragment extends SherlockFragment implements OnClickListener{
 		login.setOnClickListener(this);
 		
 		return view;
+	}
+
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setSubtitle("Login");
 	}
 
 	@Override

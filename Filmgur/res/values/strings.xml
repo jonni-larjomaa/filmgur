@@ -10,6 +10,7 @@
     <string name="title_activity_albums">Filmgur</string>
     <string name="hello_world">Hello world!</string>
     <string name="createalbum">Create Album</string>
+    <string name="camera">camera</string>
     
 
 </resources>

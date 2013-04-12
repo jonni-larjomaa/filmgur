@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class AlbumsFragment extends SherlockListFragment{
 	
@@ -29,6 +28,7 @@ public class AlbumsFragment extends SherlockListFragment{
 	protected String token;
 	protected ArrayAdapter<GDAlbum> albumsad;
 	
+	private ActionBar mActionBar;
 	private OnFragmentChangedListener mListener = null;
 	
 	@Override
@@ -51,10 +51,6 @@ public class AlbumsFragment extends SherlockListFragment{
 		Bundle b = getArguments();
 		token = b.getString("TOKEN");
 		
-		final ActionBar actionBar = getSherlockActivity().getSupportActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setSubtitle("Albums");
-		
 		albumsad = new ArrayAdapter<GDAlbum>(getActivity(), android.R.layout.simple_list_item_1);
 		
 		showAlbums();
@@ -70,7 +66,14 @@ public class AlbumsFragment extends SherlockListFragment{
 		return view;
 	}
 
-
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		mActionBar = getSherlockActivity().getSupportActionBar();
+		mActionBar.setDisplayHomeAsUpEnabled(true);
+		mActionBar.setSubtitle("Albums");
+	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

@@ -3,10 +3,19 @@ package foo.filmgur.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Google Drive Album model.
+ * @author Jonni
+ *
+ */
 public class GDAlbum implements Parcelable{
 	
 	private String title;
 	private String id;
+	
+	public GDAlbum(){
+		
+	}
 	
 	public String getTitle() {
 		return title;
