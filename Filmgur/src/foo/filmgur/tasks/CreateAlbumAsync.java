@@ -1,4 +1,4 @@
-package foo.filmgur;
+package foo.filmgur.tasks;
 
 
 import java.io.IOException;

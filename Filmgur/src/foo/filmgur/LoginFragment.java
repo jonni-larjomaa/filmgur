@@ -15,6 +15,8 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.auth.GoogleAuthUtil;
 
+import foo.filmgur.tasks.GetAuthToken;
+
 
 
 public class LoginFragment extends SherlockFragment implements OnClickListener{

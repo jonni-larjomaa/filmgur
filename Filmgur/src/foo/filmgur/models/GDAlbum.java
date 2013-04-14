@@ -10,6 +10,8 @@ import android.os.Parcelable;
  */
 public class GDAlbum implements Parcelable{
 	
+	public static String MIME = "application/vnd.google-apps.folder";
+	
 	private String title;
 	private String id;
 	

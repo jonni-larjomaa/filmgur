@@ -1,5 +1,6 @@
 package foo.filmgur;
 
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
@@ -8,6 +9,8 @@ import com.actionbarsherlock.view.MenuItem;
 
 import foo.filmgur.listener.OnFragmentChangedListener;
 import foo.filmgur.models.GDAlbum;
+import foo.filmgur.tasks.CreateAlbumAsync;
+import foo.filmgur.tasks.FetchAlbumsAsync;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -51,9 +54,9 @@ public class AlbumsFragment extends SherlockListFragment{
 		Bundle b = getArguments();
 		token = b.getString("TOKEN");
 		
-		albumsad = new ArrayAdapter<GDAlbum>(getActivity(), android.R.layout.simple_list_item_1);
 		
-		showAlbums();
+		
+		
 	}
 
 	@Override
@@ -61,7 +64,10 @@ public class AlbumsFragment extends SherlockListFragment{
 			Bundle savedInstanceState) {
 		
 		View view = inflater.inflate(R.layout.albums, container,false);
+		
+		albumsad = new ArrayAdapter<GDAlbum>(getActivity(), android.R.layout.simple_list_item_1);
 		setListAdapter(albumsad);
+		showAlbums();
 		
 		return view;
 	}

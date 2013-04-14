@@ -1,4 +1,4 @@
-package foo.filmgur;
+package foo.filmgur.tasks;
 
 import java.io.IOException;
 
@@ -6,6 +6,10 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
+
+import foo.filmgur.FilmgurActivity;
+import foo.filmgur.R;
+import foo.filmgur.R.layout;
 
 import android.app.Activity;
 import android.content.Intent;

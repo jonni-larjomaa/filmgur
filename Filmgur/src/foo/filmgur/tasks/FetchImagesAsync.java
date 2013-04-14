@@ -1,4 +1,4 @@
-package foo.filmgur;
+package foo.filmgur.tasks;
 
 
 import java.io.IOException;
@@ -14,49 +14,54 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import foo.filmgur.models.GDAlbum;
+import foo.filmgur.models.GDImage;
+
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
-public class FetchAlbumsAsync extends AsyncTask<Void, Void, List<GDAlbum>> {
+public class FetchImagesAsync extends AsyncTask<Void, Void, List<GDImage>> {
 	
 	private static final String TAG = "filmgur";
 	
-	private ArrayAdapter<GDAlbum> ad;
+	private ArrayAdapter<GDImage> ad;
 	private String token;
+	private String parentId;
 	
-	public FetchAlbumsAsync(ArrayAdapter<GDAlbum> ad, String token){
+	public FetchImagesAsync(ArrayAdapter<GDImage> ad, String token, String parentId){
 		super();
 		this.ad = ad;
 		this.token = token;
+		this.parentId = parentId;
 	}
 	
 	@Override
-	protected List<GDAlbum> doInBackground(Void... a) {
-		return fetchAlbums();
+	protected List<GDImage> doInBackground(Void... a) {
+		return fetchimages();
 	}
 
 	@Override
-	protected void onPostExecute(final List<GDAlbum> result) {
+	protected void onPostExecute(final List<GDImage> result) {
 		 if(!result.isEmpty()){
 			 if(!ad.isEmpty()){
 				 ad.clear();
+				 Log.i(TAG,"Reset the images listadapter");
 			 }
+			 Log.i(TAG,"Got: "+result.size()+" images");
 			 ad.addAll(result);
 			 ad.notifyDataSetChanged();
 		 }
 	}
 	
-	public List<GDAlbum> fetchAlbums(){
+	public List<GDImage> fetchimages(){
 		
 		// build query uri.
 		Builder ub = Uri.parse("https://www.googleapis.com").buildUpon();
 		ub.path("/drive/v2/files");
-		ub.appendQueryParameter("q", "mimeType='application/vnd.google-apps.folder'");
-		ub.appendQueryParameter("fields", "items(title,id)");
+		ub.appendQueryParameter("q", "mimeType='"+GDImage.MIME+"'and '"+parentId+"' in parents");
+		ub.appendQueryParameter("fields", "items(title,id,downloadUrl)");
 		
 		// make httpget mehtod. and add auhtorization header..
 		HttpGet get = new HttpGet(ub.build().toString());
@@ -77,20 +82,21 @@ public class FetchAlbumsAsync extends AsyncTask<Void, Void, List<GDAlbum>> {
 		return null;
 	}
 	
-	protected List<GDAlbum> parseJSON(String json){
+	protected List<GDImage> parseJSON(String json){
 		
-		List<GDAlbum> tmplist = new ArrayList<GDAlbum>();
+		List<GDImage> tmplist = new ArrayList<GDImage>();
 		
 		try {
 			JSONObject job = new JSONObject(json);
 			JSONArray items = job.getJSONArray("items");
 			
 			for(int i=0;i < items.length();i++){
-				JSONObject albumsob = items.getJSONObject(i);
-				GDAlbum album = new GDAlbum();
-				album.setId(albumsob.getString("id"));
-				album.setTitle(albumsob.getString("title"));
-				tmplist.add(album);
+				JSONObject imagesob = items.getJSONObject(i);
+				GDImage image = new GDImage();
+				image.setId(imagesob.getString("id"));
+				image.setTitle(imagesob.getString("title"));
+				image.setSrcUrl(imagesob.getString("downloadUrl"));
+				tmplist.add(image);
 			}
 			return tmplist;
 		} catch (JSONException e) {
