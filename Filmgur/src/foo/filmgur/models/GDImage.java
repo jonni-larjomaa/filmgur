@@ -12,7 +12,7 @@ import android.os.Parcelable;
  */
 public class GDImage implements Parcelable {
 
-	public static final String MIME = "image/jpg";
+	public static final String MIME = "image/jpeg";
 	
 	private String name;
 	private String id;
@@ -54,6 +54,10 @@ public class GDImage implements Parcelable {
 
 	public void setAlbumid(String albumid) {
 		this.albumid = albumid;
+	}
+	
+	public String toString(){
+		return this.getTitle();
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import foo.filmgur.FilmgurActivity;
 import foo.filmgur.models.GDImage;
 
 import android.net.Uri;
@@ -27,13 +28,11 @@ public class FetchImagesAsync extends AsyncTask<Void, Void, List<GDImage>> {
 	private static final String TAG = "filmgur";
 	
 	private ArrayAdapter<GDImage> ad;
-	private String token;
 	private String parentId;
 	
-	public FetchImagesAsync(ArrayAdapter<GDImage> ad, String token, String parentId){
+	public FetchImagesAsync(ArrayAdapter<GDImage> ad, String parentId){
 		super();
 		this.ad = ad;
-		this.token = token;
 		this.parentId = parentId;
 	}
 	
@@ -65,7 +64,7 @@ public class FetchImagesAsync extends AsyncTask<Void, Void, List<GDImage>> {
 		
 		// make httpget mehtod. and add auhtorization header..
 		HttpGet get = new HttpGet(ub.build().toString());
-		get.addHeader("Authorization", "Bearer "+token);
+		get.addHeader("Authorization", "Bearer "+FilmgurActivity.accessToken);
 		
 		Log.d(TAG,"Request: "+get.getRequestLine());
 		

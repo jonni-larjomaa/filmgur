@@ -7,12 +7,10 @@ import java.io.IOException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,58 +40,52 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 	
 	@Override
 	protected GDImage doInBackground(Void... v) {
-		return createimage();
+		return uploadImage();
 	}
 
 	@Override
 	protected void onPostExecute(GDImage result) {
-		ad.add(result);
-		ad.notifyDataSetChanged();
+		if(result != null){
+			ad.add(result);
+			ad.notifyDataSetChanged();
+		}
 	}
 	
-	private GDImage createimage(){
-		
-		// build query uri.
-		Builder ub = Uri.parse("https://www.googleapis.com").buildUpon();
-		ub.path("/drive/v2/files");
-		//ub.appendQueryParameter("uploadType", "multipart");
-		ub.appendQueryParameter("fields", "title,id,downloadUrl");
-		
-		Log.d(TAG,"URL to request: "+ub.build().toString());
-		
+	private GDImage uploadImage(){		
 		try {
 			JSONObject job = new JSONObject();
 			job.put("title", image.getName());
 			job.put("mimeType", GDImage.MIME);
 			
 			JSONArray jar = new JSONArray();
-			jar.put(new JSONObject("{ \"id\" : \""+parentId+"\" }"));
+			jar.put(new JSONObject().put("id",parentId));
 			
-			job.put("parents", jar.toString());
+			job.put("parents", jar);
 			
 			Log.i(TAG,"Json body: "+job.toString());
+			
+			// build query uri.
+			Builder ub = Uri.parse("https://www.googleapis.com").buildUpon();
+			ub.path("/upload/drive/v2/files");
+			ub.appendQueryParameter("uploadType", "media");
+			ub.appendQueryParameter("fields", "title,id,downloadUrl");
+			Log.d(TAG,"URL to request: "+ub.build().toString());
 			
 			// make httpget mehtod. and add auhtorization header..
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(ub.build().toString());
 			Log.i(TAG,"Request URL: "+ub.build().toString());
 			
+			// set headers for image upload
 			post.addHeader("Authorization", "Bearer "+FilmgurActivity.accessToken);
-			post.addHeader("Content-Type","multipart/related; boundary=\"data\"");
+			post.addHeader("Content-Type", GDImage.MIME);
 			
-			// create multipart data
-			
-			
-			MultipartEntity me = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-			me.addPart("data", new FileBody(image));
-			me.addPart("data", new StringBody(job.toString()));
-
-			post.addHeader("Content-Length", ""+me.getContentLength());			
-			
-			post.setEntity(me);
+			// set fileEntity
+			FileEntity fe = new FileEntity(image, HTTP.UTF_8);
+			fe.setContentType(GDImage.MIME);
+			post.setEntity(fe);
 			
 			// create client to execute the request
-			
 			return parseJSON(client.execute(post, new BasicResponseHandler()));
 			
 		} catch (ClientProtocolException e) {
@@ -104,7 +96,6 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 		} catch (JSONException e) {
 			Log.e(TAG,"Something bad happened with json: "+e.getMessage());
 		}
-		
 		return null;
 	}
 	
@@ -125,5 +116,9 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 			Log.i(TAG,"Something bad happened with json: "+e.getMessage());
 		}
 		return null;
+	}
+	
+	private GDImage setMetaData(GDImage gdimg){
+		return gdimg;
 	}
 }

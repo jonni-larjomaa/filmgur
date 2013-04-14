@@ -1,7 +1,15 @@
 package foo.filmgur;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -18,15 +27,19 @@ import com.actionbarsherlock.view.MenuItem;
 import foo.filmgur.listener.OnFragmentChangedListener;
 import foo.filmgur.models.GDAlbum;
 import foo.filmgur.models.GDImage;
+import foo.filmgur.tasks.FetchImagesAsync;
+import foo.filmgur.tasks.ImageUploadTask;
 
 public class ImagesFragment extends SherlockListFragment {
 
-	static final String TAG = "filmgur";
+	private static final String TAG = "filmgur";
+	private static final int REQUEST_CAMERA_ACTION = 10;
 	
 	private OnFragmentChangedListener mListener = null;
 	private ActionBar mActionBar;
 	private ArrayAdapter<GDImage> imagesad;
 	private GDAlbum album;
+	private File image;
 	
 	@Override
 	public void onAttach(Activity activity) {
@@ -48,14 +61,16 @@ public class ImagesFragment extends SherlockListFragment {
 		Bundle b = getArguments();
 		album = b.getParcelable("album");		
 		
-		imagesad = new ArrayAdapter<GDImage>(getActivity(), android.R.layout.simple_list_item_1);
+		
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.albums, container,false);
+		imagesad = new ArrayAdapter<GDImage>(getActivity(), android.R.layout.simple_list_item_1);
 		setListAdapter(imagesad);
+		getImages();
 		return view;
 	}
 	
@@ -76,8 +91,33 @@ public class ImagesFragment extends SherlockListFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
+		if(R.id.camera == item.getItemId()){
+			Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			
+			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+			image = new File(
+				    Environment.getExternalStoragePublicDirectory(
+				        Environment.DIRECTORY_PICTURES
+				    ), 
+				    album.getTitle()+"_"+timeStamp+".jpg"
+				);              
+			takePic.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
+		    startActivityForResult(takePic, REQUEST_CAMERA_ACTION);
+		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onActivityResult(int, int, android.content.Intent)
+	 */
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == REQUEST_CAMERA_ACTION && resultCode == SherlockActivity.RESULT_OK){
+			uploadImage(image);
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -85,4 +125,15 @@ public class ImagesFragment extends SherlockListFragment {
 		// TODO Auto-generated method stub
 		super.onListItemClick(l, v, position, id);
 	}	
+	
+	private void getImages() {
+		FetchImagesAsync fia = new FetchImagesAsync(imagesad, album.getId());
+		fia.execute();
+	}
+	
+	private void uploadImage(File image) {
+		ImageUploadTask iut = new ImageUploadTask(imagesad, album.getId(), image);
+		iut.execute();
+	}
+
 }
