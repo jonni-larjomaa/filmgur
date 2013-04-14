@@ -27,8 +27,6 @@ import android.widget.ListView;
 public class AlbumsFragment extends SherlockListFragment{
 	
 	static final String TAG = "filmgur";
-	
-	protected String token;
 	protected ArrayAdapter<GDAlbum> albumsad;
 	
 	private ActionBar mActionBar;
@@ -49,14 +47,7 @@ public class AlbumsFragment extends SherlockListFragment{
 		super.onCreate(savedInstanceState);
 		
 		setHasOptionsMenu(true);
-		setRetainInstance(true);
-		
-		Bundle b = getArguments();
-		token = b.getString("TOKEN");
-		
-		
-		
-		
+		setRetainInstance(true);		
 	}
 
 	@Override
@@ -93,7 +84,7 @@ public class AlbumsFragment extends SherlockListFragment{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if(R.id.create_album == item.getItemId()){
 			Log.i(TAG,"menuitem clicked: "+item.getTitle());
-			AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+			AlertDialog.Builder alert = new AlertDialog.Builder(getSherlockActivity());
 
 			alert.setTitle("Title");
 			alert.setMessage("Message");
@@ -130,12 +121,12 @@ public class AlbumsFragment extends SherlockListFragment{
 	}
 
 	private void showAlbums() {
-		FetchAlbumsAsync fas = new FetchAlbumsAsync(albumsad,token);
+		FetchAlbumsAsync fas = new FetchAlbumsAsync(albumsad);
 		fas.execute();
 	}
 	
 	private void createAlbum(String title){
-		CreateAlbumAsync caa = new CreateAlbumAsync(title,albumsad,token);
+		CreateAlbumAsync caa = new CreateAlbumAsync(title,albumsad);
 		caa.execute();
 	}
 }

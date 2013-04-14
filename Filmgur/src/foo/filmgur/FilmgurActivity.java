@@ -22,6 +22,7 @@ import foo.filmgur.listener.OnFragmentChangedListener;
 public class FilmgurActivity extends SherlockFragmentActivity implements OnFragmentChangedListener, OnBackStackChangedListener {
 
 	
+	public static String accessToken;
 	private ActionBar mActionBar = null;
 	
 	/**

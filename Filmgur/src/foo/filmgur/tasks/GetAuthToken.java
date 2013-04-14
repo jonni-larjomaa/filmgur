@@ -9,7 +9,6 @@ import com.google.android.gms.auth.UserRecoverableAuthException;
 
 import foo.filmgur.FilmgurActivity;
 import foo.filmgur.R;
-import foo.filmgur.R.layout;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -62,9 +61,8 @@ public class GetAuthToken extends AsyncTask<Void, Void, String> {
 		
 		if(result != null){
 			Log.i(TAG,"Got authentication token: "+result);
-			Bundle b = new Bundle();
-			b.putString("TOKEN", result);
-			((FilmgurActivity)act).onFragmentChanged(R.layout.albums, b);
+			FilmgurActivity.accessToken = result;
+			((FilmgurActivity)act).onFragmentChanged(R.layout.albums, new Bundle());
 		}
 	}
 
