@@ -12,6 +12,8 @@ import android.os.Parcelable;
  */
 public class GDImage implements Parcelable {
 
+	public static final String MIME = "image/jpg";
+	
 	private String name;
 	private String id;
 	private String srcUrl;
@@ -22,11 +24,11 @@ public class GDImage implements Parcelable {
 	public GDImage() {
 	}
 
-	public String getName() {
+	public String getTitle() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setTitle(String name) {
 		this.name = name;
 	}
 
