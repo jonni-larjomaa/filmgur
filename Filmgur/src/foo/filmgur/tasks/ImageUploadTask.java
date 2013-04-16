@@ -125,7 +125,7 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 		
 		// set fileEntity
 		StringEntity fe = new StringEntity(metajob.toString(), HTTP.UTF_8);
-		fe.setContentType("application/json");
+		fe.setContentType("application/json");		
 		put.setEntity(fe);
 	
 		return client.execute(put, new BasicResponseHandler());
