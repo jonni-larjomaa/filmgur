@@ -2,12 +2,17 @@ package foo.filmgur.tasks;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
@@ -29,6 +34,7 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 	private ArrayAdapter<GDImage> ad;
 	private String parentId;
 	private File image;
+	private HttpClient client;
 	
 	
 	public ImageUploadTask(ArrayAdapter<GDImage> ad,String parentId, File image){
@@ -36,6 +42,8 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 		this.ad = ad;
 		this.parentId = parentId;
 		this.image = image;
+		
+		this.client = new DefaultHttpClient();
 	}
 	
 	@Override
@@ -53,26 +61,15 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 	
 	private GDImage uploadImage(){		
 		try {
-			JSONObject job = new JSONObject();
-			job.put("title", image.getName());
-			job.put("mimeType", GDImage.MIME);
-			
-			JSONArray jar = new JSONArray();
-			jar.put(new JSONObject().put("id",parentId));
-			
-			job.put("parents", jar);
-			
-			Log.i(TAG,"Json body: "+job.toString());
 			
 			// build query uri.
 			Builder ub = Uri.parse("https://www.googleapis.com").buildUpon();
 			ub.path("/upload/drive/v2/files");
 			ub.appendQueryParameter("uploadType", "media");
-			ub.appendQueryParameter("fields", "title,id,downloadUrl");
+			ub.appendQueryParameter("fields", "id");
 			Log.d(TAG,"URL to request: "+ub.build().toString());
 			
 			// make httpget mehtod. and add auhtorization header..
-			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(ub.build().toString());
 			Log.i(TAG,"Request URL: "+ub.build().toString());
 			
@@ -86,7 +83,7 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 			post.setEntity(fe);
 			
 			// create client to execute the request
-			return parseJSON(client.execute(post, new BasicResponseHandler()));
+			return createImageModel(setMetaData(client.execute(post, new BasicResponseHandler())));
 			
 		} catch (ClientProtocolException e) {
 			Log.e(TAG,"Bad Request: "+e.getMessage());
@@ -99,7 +96,42 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 		return null;
 	}
 	
-	protected GDImage parseJSON(String json){
+	private String setMetaData(String json) throws JSONException, ClientProtocolException, IOException{
+		
+		JSONObject job = new JSONObject(json);
+		GDImage img = new GDImage();
+		img.setId(job.getString("id"));
+		
+		Log.i(TAG,"Setting metadata for image with id: "+img.getId());
+		
+		JSONObject metajob = new JSONObject();
+		metajob.put("title", image.getName());
+		metajob.put("mimeType", GDImage.MIME);
+
+		JSONArray jar = new JSONArray();
+		jar.put(new JSONObject().put("id",parentId));
+		metajob.put("parents", jar);
+		
+		Log.i(TAG,"Metadata json body: "+metajob.toString());
+		
+		Builder ub = Uri.parse("https://www.googleapis.com").buildUpon();
+		ub.path("/drive/v2/files/"+img.getId());
+		ub.appendQueryParameter("fields", "title,id,downloadUrl");
+		
+		HttpPut put = new HttpPut(ub.build().toString());
+		Log.i(TAG,"Request URL: "+ub.build().toString());
+		// set headers for image upload
+		put.addHeader("Authorization", "Bearer "+FilmgurActivity.accessToken);
+		
+		// set fileEntity
+		StringEntity fe = new StringEntity(metajob.toString(), HTTP.UTF_8);
+		fe.setContentType("application/json");
+		put.setEntity(fe);
+	
+		return client.execute(put, new BasicResponseHandler());
+	}
+	
+protected GDImage createImageModel(String json){
 		
 		GDImage image = new GDImage();
 		
@@ -116,9 +148,5 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 			Log.i(TAG,"Something bad happened with json: "+e.getMessage());
 		}
 		return null;
-	}
-	
-	private GDImage setMetaData(GDImage gdimg){
-		return gdimg;
 	}
 }
