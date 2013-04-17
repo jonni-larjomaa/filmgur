@@ -4,18 +4,18 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -24,10 +24,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-import foo.filmgur.listener.OnFragmentChangedListener;
 import foo.filmgur.models.GDAlbum;
 import foo.filmgur.models.GDImage;
 import foo.filmgur.tasks.FetchImagesAsync;
+import foo.filmgur.tasks.ImageDownloadTask;
 import foo.filmgur.tasks.ImageUploadTask;
 
 public class ImagesFragment extends SherlockListFragment {
@@ -35,21 +35,11 @@ public class ImagesFragment extends SherlockListFragment {
 	private static final String TAG = "filmgur";
 	private static final int REQUEST_CAMERA_ACTION = 10;
 	
-	private OnFragmentChangedListener mListener = null;
 	private ActionBar mActionBar;
 	private ArrayAdapter<GDImage> imagesad;
 	private GDAlbum album;
 	private File image;
-	
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		try{
-			mListener = (OnFragmentChangedListener) activity;			
-		}catch(Exception e){
-			Log.e(TAG, "error", e);
-		}
-	}
+	private ImageView iv;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,10 +57,11 @@ public class ImagesFragment extends SherlockListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.albums, container,false);
+		View view = inflater.inflate(R.layout.images, container,false);
 		imagesad = new ArrayAdapter<GDImage>(getActivity(), android.R.layout.simple_list_item_1);
 		setListAdapter(imagesad);
 		getImages();
+		iv = (ImageView) view.findViewById(R.id.dlimage);
 		return view;
 	}
 	
@@ -122,7 +113,8 @@ public class ImagesFragment extends SherlockListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		// TODO Auto-generated method stub
+		ImageDownloadTask idt = new ImageDownloadTask(imagesad.getItem(position).getSrcUrl(), iv);
+		idt.execute();
 		super.onListItemClick(l, v, position, id);
 	}	
 	

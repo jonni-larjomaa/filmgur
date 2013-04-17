@@ -2,15 +2,12 @@ package foo.filmgur.tasks;
 
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -22,6 +19,7 @@ import org.json.JSONObject;
 
 import foo.filmgur.FilmgurActivity;
 import foo.filmgur.models.GDImage;
+
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.os.AsyncTask;
@@ -131,7 +129,7 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 		return client.execute(put, new BasicResponseHandler());
 	}
 	
-protected GDImage createImageModel(String json){
+	protected GDImage createImageModel(String json){
 		
 		GDImage image = new GDImage();
 		
