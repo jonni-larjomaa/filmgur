@@ -15,13 +15,12 @@ import com.actionbarsherlock.view.MenuItem;
 import foo.filmgur.listener.OnFragmentChangedListener;
 import foo.filmgur.models.GDAlbum;
 import foo.filmgur.tasks.CreateAlbumAsync;
-import foo.filmgur.tasks.DeleteItemsTask;
+import foo.filmgur.tasks.DeleteAlbumsAsync;
 import foo.filmgur.tasks.FetchAlbumsAsync;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
@@ -206,8 +205,9 @@ public class AlbumsFragment extends SherlockListFragment{
 			public boolean onActionItemClicked(android.view.ActionMode mode,
 					android.view.MenuItem item) {
 				if(item.getItemId() == R.id.remove){
-					DeleteItemsTask dit = new DeleteItemsTask();
-					dit.execute(selecteditems);
+					DeleteAlbumsAsync dit = new DeleteAlbumsAsync(selecteditems,albumsad);
+					dit.execute();
+					mode.finish();
 				}
 				return false;
 			}

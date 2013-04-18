@@ -3,9 +3,13 @@ package foo.filmgur;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -15,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.AbsListView.MultiChoiceModeListener;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -26,9 +30,11 @@ import com.actionbarsherlock.view.MenuItem;
 
 import foo.filmgur.models.GDAlbum;
 import foo.filmgur.models.GDImage;
+import foo.filmgur.tasks.DeleteAlbumsAsync;
+import foo.filmgur.tasks.DeleteImagesAsync;
 import foo.filmgur.tasks.FetchImagesAsync;
-import foo.filmgur.tasks.DownloadImageTask;
-import foo.filmgur.tasks.UploadImageTask;
+import foo.filmgur.tasks.DownloadImageAsync;
+import foo.filmgur.tasks.UploadImageAsync;
 
 public class ImagesFragment extends SherlockListFragment {
 
@@ -40,6 +46,7 @@ public class ImagesFragment extends SherlockListFragment {
 	private GDAlbum album;
 	private File image;
 	private ImageView iv;
+	private List<GDImage> selecteditems;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -50,8 +57,6 @@ public class ImagesFragment extends SherlockListFragment {
 		
 		Bundle b = getArguments();
 		album = b.getParcelable("album");		
-		
-		
 	}
 	
 	@Override
@@ -113,7 +118,7 @@ public class ImagesFragment extends SherlockListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		DownloadImageTask idt = new DownloadImageTask(imagesad.getItem(position).getSrcUrl(), iv);
+		DownloadImageAsync idt = new DownloadImageAsync(imagesad.getItem(position).getSrcUrl(), iv);
 		idt.execute();
 		super.onListItemClick(l, v, position, id);
 	}	
@@ -124,8 +129,75 @@ public class ImagesFragment extends SherlockListFragment {
 	}
 	
 	private void uploadImage(File image) {
-		UploadImageTask iut = new UploadImageTask(imagesad, album.getId(), image);
+		UploadImageAsync iut = new UploadImageAsync(imagesad, album.getId(), image);
 		iut.execute();
+	}
+	
+	private void setupActionMode() {
+		
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+			setMultiModal();
+		}	
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setMultiModal() {
+		
+		ListView listview = getListView();
+		listview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+		listview.setMultiChoiceModeListener(new MultiChoiceModeListener() {
+			
+			@Override
+			public boolean onPrepareActionMode(android.view.ActionMode mode,
+					android.view.Menu menu) {
+				return false;
+			}
+			
+			@Override
+			public void onDestroyActionMode(android.view.ActionMode mode) {
+				
+			}
+			
+			@Override
+			public boolean onCreateActionMode(android.view.ActionMode mode,
+					android.view.Menu menu) {
+				if(selecteditems.size() > 0){
+					selecteditems.clear();
+				}
+				android.view.MenuInflater inflater = mode.getMenuInflater();
+				inflater.inflate(R.menu.context_menu, menu);
+				return true;
+			}
+			
+			@Override
+			public boolean onActionItemClicked(android.view.ActionMode mode,
+					android.view.MenuItem item) {
+				if(item.getItemId() == R.id.remove){
+					DeleteImagesAsync dit = new DeleteImagesAsync(selecteditems,imagesad);
+					dit.execute();
+					mode.finish();
+				}
+				return false;
+			}
+			
+			@Override
+			public void onItemCheckedStateChanged(android.view.ActionMode mode,
+					int position, long id, boolean checked) {
+				if(checked){
+					selecteditems.add(imagesad.getItem(position));
+				}
+				else{
+					Iterator<GDImage> iter = selecteditems.iterator();
+					while(iter.hasNext()){
+						GDImage stored = iter.next();
+						if(stored == imagesad.getItem(position)){
+							iter.remove();
+						}
+					}
+				}
+			}
+		});
+		
 	}
 
 }
