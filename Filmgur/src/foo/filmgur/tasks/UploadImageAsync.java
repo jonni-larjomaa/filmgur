@@ -52,6 +52,9 @@ public class UploadImageAsync extends AsyncTask<Void, Void, GDImage> {
 	@Override
 	protected void onPostExecute(GDImage result) {
 		if(result != null){
+			if(image.delete()){
+				Log.i(TAG,"local version deleted!");
+			}
 			ad.add(result);
 			ad.notifyDataSetChanged();
 		}

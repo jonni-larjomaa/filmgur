@@ -72,7 +72,7 @@ public class AlbumsFragment extends SherlockListFragment{
 			Bundle savedInstanceState) {
 		
 		View view = inflater.inflate(R.layout.albums, container,false);
-		albumsad = new ArrayAdapter<GDAlbum>(getActivity(), R.layout.album_item_view,R.id.albumtitle);
+		albumsad = new ArrayAdapter<GDAlbum>(getSherlockActivity(), R.layout.album_item_view,R.id.albumtitle);
 		setListAdapter(albumsad);
 		showAlbums();
 		return view;
