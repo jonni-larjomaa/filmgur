@@ -46,7 +46,7 @@ public class LoginFragment extends SherlockFragment implements OnClickListener{
 		View view = inflater.inflate(R.layout.login, container, false);
 		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, mNamesArray);
+                R.layout.spinner_item,R.id.spinnerItem, mNamesArray);
 		
 		mAccountTypesSpinner = (Spinner) view.findViewById(R.id.spinner1);
 		mAccountTypesSpinner.setAdapter(adapter);
