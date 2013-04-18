@@ -80,8 +80,9 @@ public class UploadImageAsync extends AsyncTask<Void, Void, GDImage> {
 			fe.setContentType(GDImage.MIME);
 			post.setEntity(fe);
 			
+			String resp = client.execute(post, new BasicResponseHandler());
 			// create client to execute the request
-			return createImageModel(setMetaData(client.execute(post, new BasicResponseHandler())));
+			return createImageModel(setMetaData(resp));
 			
 		} catch (ClientProtocolException e) {
 			Log.e(TAG,"Bad Request: "+e.getMessage());
@@ -125,8 +126,10 @@ public class UploadImageAsync extends AsyncTask<Void, Void, GDImage> {
 		StringEntity fe = new StringEntity(metajob.toString(), HTTP.UTF_8);
 		fe.setContentType("application/json");		
 		put.setEntity(fe);
-	
-		return client.execute(put, new BasicResponseHandler());
+		
+		String resp = client.execute(put, new BasicResponseHandler());
+		client.getConnectionManager().shutdown();
+		return resp;
 	}
 	
 	protected GDImage createImageModel(String json){

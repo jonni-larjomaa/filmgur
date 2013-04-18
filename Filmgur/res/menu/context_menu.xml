@@ -2,5 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
     <item android:id="@+id/remove" 
-        android:icon="@android:drawable/ic_input_delete"/>
+        android:icon="@drawable/ic_action_delete"/>
 </menu>

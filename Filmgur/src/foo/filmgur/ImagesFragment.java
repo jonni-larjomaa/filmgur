@@ -2,6 +2,7 @@ package foo.filmgur;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +31,6 @@ import com.actionbarsherlock.view.MenuItem;
 
 import foo.filmgur.models.GDAlbum;
 import foo.filmgur.models.GDImage;
-import foo.filmgur.tasks.DeleteAlbumsAsync;
 import foo.filmgur.tasks.DeleteImagesAsync;
 import foo.filmgur.tasks.FetchImagesAsync;
 import foo.filmgur.tasks.DownloadImageAsync;
@@ -46,7 +46,7 @@ public class ImagesFragment extends SherlockListFragment {
 	private GDAlbum album;
 	private File image;
 	private ImageView iv;
-	private List<GDImage> selecteditems;
+	protected List<GDImage> selecteditems = new ArrayList<GDImage>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +77,7 @@ public class ImagesFragment extends SherlockListFragment {
 		mActionBar = getSherlockActivity().getSupportActionBar();
 		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setSubtitle(album.getTitle()+"- Images");
+		setupActionMode();
 	}
 
 	@Override
@@ -185,6 +186,7 @@ public class ImagesFragment extends SherlockListFragment {
 					int position, long id, boolean checked) {
 				if(checked){
 					selecteditems.add(imagesad.getItem(position));
+					
 				}
 				else{
 					Iterator<GDImage> iter = selecteditems.iterator();
@@ -195,6 +197,7 @@ public class ImagesFragment extends SherlockListFragment {
 						}
 					}
 				}
+				mode.setTitle("Selected items: "+selecteditems.size());
 			}
 		});
 		

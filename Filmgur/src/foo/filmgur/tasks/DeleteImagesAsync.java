@@ -26,7 +26,7 @@ private final static String TAG = "filmgur";
 	
 	public DeleteImagesAsync(List<GDImage> ditems, ArrayAdapter<GDImage> imagesad) {
 		this.ditems = ditems;
-		this.albumsad = imagesad;
+		this.imagesad = imagesad;
 	}
 
 	@Override
@@ -64,8 +64,8 @@ private final static String TAG = "filmgur";
 	
 	@Override
 	protected void onProgressUpdate(GDImage... values) {
-		albumsad.remove(values[0]);
-		albumsad.notifyDataSetChanged();
+		imagesad.remove(values[0]);
+		imagesad.notifyDataSetChanged();
 		super.onProgressUpdate(values);
 	}
 }

@@ -66,25 +66,23 @@ public class AlbumsFragment extends SherlockListFragment{
 		setHasOptionsMenu(true);
 		setRetainInstance(true);		
 	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		getListView().setLayoutAnimation(mAnimateList);
-		getListView().startLayoutAnimation();
-	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
 		View view = inflater.inflate(R.layout.albums, container,false);
-		
 		albumsad = new ArrayAdapter<GDAlbum>(getActivity(), R.layout.album_item_view,R.id.albumtitle);
-		
 		setListAdapter(albumsad);
 		showAlbums();
 		return view;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		getListView().setLayoutAnimation(mAnimateList);
+		getListView().startLayoutAnimation();
 	}
 
 	@Override
