@@ -26,7 +26,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
-public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
+public class UploadImageTask extends AsyncTask<Void, Void, GDImage> {
 	
 	private static final String TAG = "filmgur";
 	private ArrayAdapter<GDImage> ad;
@@ -35,7 +35,7 @@ public class ImageUploadTask extends AsyncTask<Void, Void, GDImage> {
 	private HttpClient client;
 	
 	
-	public ImageUploadTask(ArrayAdapter<GDImage> ad,String parentId, File image){
+	public UploadImageTask(ArrayAdapter<GDImage> ad,String parentId, File image){
 		super();
 		this.ad = ad;
 		this.parentId = parentId;

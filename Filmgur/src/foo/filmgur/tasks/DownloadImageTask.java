@@ -16,14 +16,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
-public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
+public class DownloadImageTask extends AsyncTask<Void, Void, Bitmap> {
 
 	private final static String TAG = "filmgur";
 	
 	private String uri;
 	private ImageView iv;
 	
-	public ImageDownloadTask(String uri, ImageView iv) {
+	public DownloadImageTask(String uri, ImageView iv) {
 		this.uri = uri;
 		this.iv = iv;
 	}

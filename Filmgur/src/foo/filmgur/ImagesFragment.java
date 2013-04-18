@@ -27,8 +27,8 @@ import com.actionbarsherlock.view.MenuItem;
 import foo.filmgur.models.GDAlbum;
 import foo.filmgur.models.GDImage;
 import foo.filmgur.tasks.FetchImagesAsync;
-import foo.filmgur.tasks.ImageDownloadTask;
-import foo.filmgur.tasks.ImageUploadTask;
+import foo.filmgur.tasks.DownloadImageTask;
+import foo.filmgur.tasks.UploadImageTask;
 
 public class ImagesFragment extends SherlockListFragment {
 
@@ -113,7 +113,7 @@ public class ImagesFragment extends SherlockListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		ImageDownloadTask idt = new ImageDownloadTask(imagesad.getItem(position).getSrcUrl(), iv);
+		DownloadImageTask idt = new DownloadImageTask(imagesad.getItem(position).getSrcUrl(), iv);
 		idt.execute();
 		super.onListItemClick(l, v, position, id);
 	}	
@@ -124,7 +124,7 @@ public class ImagesFragment extends SherlockListFragment {
 	}
 	
 	private void uploadImage(File image) {
-		ImageUploadTask iut = new ImageUploadTask(imagesad, album.getId(), image);
+		UploadImageTask iut = new UploadImageTask(imagesad, album.getId(), image);
 		iut.execute();
 	}
 
