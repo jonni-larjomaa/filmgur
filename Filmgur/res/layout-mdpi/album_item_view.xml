@@ -6,8 +6,8 @@
     
     <ImageView android:id="@+id/albumicon"
         android:src="@drawable/album_icon"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         />
     
     <TextView
@@ -15,8 +15,8 @@
         android:gravity="center_vertical"
         android:paddingLeft="15dp"
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:layout_toRightOf="@id/albumicon"
-        android:textSize="50sp" />
+        android:textSize="30sp" />
     
 </RelativeLayout>
