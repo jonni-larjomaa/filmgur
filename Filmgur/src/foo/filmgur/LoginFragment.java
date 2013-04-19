@@ -62,7 +62,7 @@ public class LoginFragment extends SherlockFragment implements OnClickListener{
 	public void onStart() {
 		super.onStart();
 		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
-		actionbar.setSubtitle("Login");
+		actionbar.setSubtitle(R.string.login);
 	}
 
 	@Override

@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -69,7 +67,7 @@ public class ImagesFragment extends SherlockListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.images, container,false);
-		imagesad = new ArrayAdapter<GDImage>(getActivity(), android.R.layout.simple_list_item_1);
+		imagesad = new ArrayAdapter<GDImage>(getSherlockActivity(), android.R.layout.simple_list_item_1);
 		setListAdapter(imagesad);
 		getImages();
 
@@ -82,7 +80,7 @@ public class ImagesFragment extends SherlockListFragment {
 		
 		mActionBar = getSherlockActivity().getSupportActionBar();
 		mActionBar.setDisplayHomeAsUpEnabled(true);
-		mActionBar.setSubtitle(album.getTitle()+"- Images");
+		mActionBar.setSubtitle(album.getTitle()+" - "+getString(R.string.images));
 		setupActionMode();
 	}
 
@@ -92,6 +90,7 @@ public class ImagesFragment extends SherlockListFragment {
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
+	// when camera action selected make new file and start camera intent.
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if(R.id.camera == item.getItemId()){
@@ -109,8 +108,6 @@ public class ImagesFragment extends SherlockListFragment {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.Fragment#onActivityResult(int, int, android.content.Intent)
@@ -129,15 +126,32 @@ public class ImagesFragment extends SherlockListFragment {
 		
 		GDImage selected = imagesad.getItem(position);
 		
+		// inflate the new image showing popup dialog layout.
 		LayoutInflater inflater = getSherlockActivity().getLayoutInflater();
-		final View view = inflater.inflate(R.layout.image_dialog,null);
+		final View view = inflater.inflate(R.layout.image_dialog,
+				(ViewGroup) getSherlockActivity().findViewById(R.id.image_dialog_popup));
 		final ImageView ivd = (ImageView) view.findViewById(R.id.dlimage);
+		ivd.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ImageView civd = (ImageView) v.findViewById(R.id.dlimage);
+				Bitmap bmp = ((BitmapDrawable)civd.getDrawable()).getBitmap();
+				
+				Matrix mtrx = new Matrix();
+				mtrx.postRotate(90);
+				
+				Bitmap transbmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), mtrx, false);
+				civd.setImageBitmap(transbmp);
+			}
+		});
 		
+		// build new dialog to show image.
 		AlertDialog.Builder idb = new AlertDialog.Builder(getSherlockActivity());
 		idb.setView(view);
 		idb.setTitle(selected.getTitle());
-		idb.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+		idb.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
 			
+			// when closed dismiss the dialog.
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
@@ -145,21 +159,27 @@ public class ImagesFragment extends SherlockListFragment {
 			}
 		});
 		idb.create().show();
+		
+		// fetch the image and insert it to imageview of dialog.
 		DownloadImageAsync idt = new DownloadImageAsync(selected.getSrcUrl(), ivd);
 		idt.execute();
 		super.onListItemClick(l, v, position, id);
 	}	
 	
+	// get image metadata and populate the list.
 	private void getImages() {
 		FetchImagesAsync fia = new FetchImagesAsync(imagesad, album.getId());
 		fia.execute();
 	}
 	
+	// uploading of the image after successful camera intent.
 	private void uploadImage(File image) {
 		UploadImageAsync iut = new UploadImageAsync(imagesad, album.getId(), image);
 		iut.execute();
 	}
 	
+	// setup the action mode with fallback possibility 
+	//TODO make the fallback version
 	private void setupActionMode() {
 		
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){

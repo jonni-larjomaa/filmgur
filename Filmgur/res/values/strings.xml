@@ -8,5 +8,10 @@
     <string name="createalbum">Create Album</string>
     <string name="camera">Camera</string>
 	<string name="remove">Remove selected</string>
+	<string name="albums">Albums</string>
+	<string name="newalbum">New Album</string>
+	<string name="images">Images</string>
+	<string name="close">Close</string>
+	<string name="albumname">Album Name:</string>
 
 </resources>

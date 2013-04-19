@@ -43,7 +43,6 @@ public class AlbumsFragment extends SherlockListFragment{
 	private ActionBar mActionBar;
 	private OnFragmentChangedListener mListener = null;
 	protected List<GDAlbum> selecteditems = new ArrayList<GDAlbum>();
-	//private ActionMode.Callback mActionModeCallback;
 	
 	@Override
 	public void onAttach(Activity activity) {
@@ -70,7 +69,8 @@ public class AlbumsFragment extends SherlockListFragment{
 			Bundle savedInstanceState) {
 		
 		View view = inflater.inflate(R.layout.albums, container,false);
-		albumsad = new ArrayAdapter<GDAlbum>(getSherlockActivity(), R.layout.album_item_view,R.id.albumtitle);
+		albumsad = new ArrayAdapter<GDAlbum>(getSherlockActivity(), 
+				R.layout.album_item_view,R.id.albumtitle);
 		setListAdapter(albumsad);
 		showAlbums();
 		return view;
@@ -89,7 +89,7 @@ public class AlbumsFragment extends SherlockListFragment{
 		
 		mActionBar = getSherlockActivity().getSupportActionBar();
 		mActionBar.setDisplayHomeAsUpEnabled(true);
-		mActionBar.setSubtitle("Albums");
+		mActionBar.setSubtitle(R.string.albums);
 		setupActionMode();
 	}
 
@@ -107,20 +107,20 @@ public class AlbumsFragment extends SherlockListFragment{
 			Log.i(TAG,"menuitem clicked: "+item.getTitle());
 			AlertDialog.Builder alert = new AlertDialog.Builder(getSherlockActivity());
 
-			alert.setTitle("Title");
-			alert.setMessage("Message");
+			alert.setTitle(R.string.newalbum);
+			alert.setMessage(R.string.albumname);
 
 			// Set an EditText view to get user input 
 			final EditText input = new EditText(getActivity());
 			alert.setView(input);
 
-			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			// set action for positive button.
+			alert.setPositiveButton(R.string.createalbum, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				
 				  String value = input.getText().toString();
 				  Log.i(TAG,"Albumname is: "+value);
 				  createAlbum(value);
-			  
 				}
 			});
 			alert.show();
@@ -158,10 +158,7 @@ public class AlbumsFragment extends SherlockListFragment{
 		
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
 			setMultiModal();
-		}
-		else{
-			setModal();
-		}		
+		}	
 	}
 
 	private void setModal() {

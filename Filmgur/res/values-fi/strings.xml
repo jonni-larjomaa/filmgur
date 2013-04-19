@@ -7,6 +7,10 @@
     <string name="createalbum">Luo Albumi</string>
     <string name="camera">Kamera</string>
 	<string name="remove">Poista valitut</string>
-
+	<string name="albums">Albumit</string>
+	<string name="newalbum">Uusi Albumi</string>
+	<string name="images">Kuvat</string>
+	<string name="close">Sulje</string>
+	<string name="albumname">Albumin Nimi:</string>
     
 </resources>
