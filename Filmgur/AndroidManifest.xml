@@ -21,7 +21,8 @@
         android:theme="@style/Theme.Sherlock" >
         <activity
             android:name="foo.filmgur.FilmgurActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

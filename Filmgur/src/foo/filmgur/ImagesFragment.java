@@ -6,8 +6,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -17,6 +23,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -38,14 +45,13 @@ import foo.filmgur.tasks.UploadImageAsync;
 
 public class ImagesFragment extends SherlockListFragment {
 
-	private static final String TAG = "filmgur";
+	//private static final String TAG = "filmgur";
 	private static final int REQUEST_CAMERA_ACTION = 10;
 	
 	private ActionBar mActionBar;
 	private ArrayAdapter<GDImage> imagesad;
 	private GDAlbum album;
 	private File image;
-	private ImageView iv;
 	protected List<GDImage> selecteditems = new ArrayList<GDImage>();
 
 	@Override
@@ -66,7 +72,7 @@ public class ImagesFragment extends SherlockListFragment {
 		imagesad = new ArrayAdapter<GDImage>(getActivity(), android.R.layout.simple_list_item_1);
 		setListAdapter(imagesad);
 		getImages();
-		iv = (ImageView) view.findViewById(R.id.dlimage);
+
 		return view;
 	}
 	
@@ -117,9 +123,29 @@ public class ImagesFragment extends SherlockListFragment {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
+	// setup dialog to show image which was selected from list.
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		DownloadImageAsync idt = new DownloadImageAsync(imagesad.getItem(position).getSrcUrl(), iv);
+		
+		GDImage selected = imagesad.getItem(position);
+		
+		LayoutInflater inflater = getSherlockActivity().getLayoutInflater();
+		final View view = inflater.inflate(R.layout.image_dialog,null);
+		final ImageView ivd = (ImageView) view.findViewById(R.id.dlimage);
+		
+		AlertDialog.Builder idb = new AlertDialog.Builder(getSherlockActivity());
+		idb.setView(view);
+		idb.setTitle(selected.getTitle());
+		idb.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				
+			}
+		});
+		idb.create().show();
+		DownloadImageAsync idt = new DownloadImageAsync(selected.getSrcUrl(), ivd);
 		idt.execute();
 		super.onListItemClick(l, v, position, id);
 	}	
