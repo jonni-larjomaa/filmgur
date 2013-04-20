@@ -33,6 +33,7 @@ import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class AlbumsFragment extends SherlockListFragment{
 	
@@ -158,11 +159,11 @@ public class AlbumsFragment extends SherlockListFragment{
 		
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
 			setMultiModal();
-		}	
-	}
-
-	private void setModal() {
-		// TODO Auto-generated method stub
+		}
+		else{
+			Toast.makeText(getSherlockActivity(), 
+					"No support for contextual menus", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
