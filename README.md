@@ -34,7 +34,6 @@ before building google play services must be applied to the project as library p
 5. run the app on real device 
   *(cant use emulator because of google play service dependency and those are not available for the emulators)
 
-
 *Libraries Used!*
 
 1. ActionBarSherlock (included as submodule)
