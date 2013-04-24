@@ -11,13 +11,7 @@
     <ListView
         android:id="@id/android:list"
         android:layout_width="match_parent"
-        android:layout_height="200dp" >
+        android:layout_height="match_parent" >
     </ListView>
-
-    <ImageView
-        android:id="@+id/dlimage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/android:list" />
 
 </RelativeLayout>
