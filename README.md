@@ -15,6 +15,7 @@ It uses google drive to store and retrieve images taken with android device. Thu
 6. Removing of multiple albums / pictures by contextual menus.
 
 *Future Features*
+
 1. Caching of frequently accessed files (some like 10-20 images at time and older ones gets always removed)
 2. Saving the rotated image back to google drive.
 3. Adding geolocation information to picture metadata (supported by google drive natively).
@@ -28,12 +29,9 @@ before building google play services must be applied to the project as library p
 
 1. git clone on this repo
 2. import to eclipse
-3. add google-play-services-lib as library project and attach to this one
-  *http://developer.android.com/google/play-services/setup.html
+3. add google-play-services-lib as library project and attach to this one (http://developer.android.com/google/play-services/setup.html)
 4. Attach real device to computer
-5. run the app on real device 
-  *(cant use emulator because of google play service dependency and those are not available for the emulators)
-
+5. run the app on real device (cant use emulator because of google play service dependency and those are not available for the emulators)
 
 *Libraries Used!*
 
